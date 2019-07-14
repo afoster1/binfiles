@@ -56,7 +56,7 @@ goto :EOF
 
 :python37
 call :show_environment "python37"
-set PATH=%AppData%\Local\Programs\Python\Python37;%PATH%
+set PATH=%LocalAppData%\Programs\Python\Python37;%PATH%
 goto :EOF
 
 :error
