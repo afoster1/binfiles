@@ -19,6 +19,7 @@ if "%1" == "vs15ce64" goto :vs15ce64 || goto :error
 if "%1" == "python27_86" goto :python27_86 || goto :error
 if "%1" == "python37_86" goto :python37_86 || goto :error
 if "%1" == "python37_64" goto :python37_64 || goto :error
+if "%1" == "gpg" goto :gpg || goto :error
 
 if %environment_initialised% EQU 0 goto :error
 goto :success
@@ -63,6 +64,11 @@ goto :EOF
 :python37_64
 call :show_environment "python37_64"
 set PATH=%LocalAppData%\Programs\Python\Python37;%PATH%
+goto :EOF
+
+:gpg
+call :show_environment "gpg"
+set GNUPGHOME=p:\keys
 goto :EOF
 
 :error
