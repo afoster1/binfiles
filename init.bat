@@ -16,8 +16,9 @@ if "%1" == "cppdev86" call :cppdev86 || goto :error
 if "%1" == "cppdev64" call :cppdev64 || goto :error
 if "%1" == "vs15ce86" goto :vs15ce86 || goto :error
 if "%1" == "vs15ce64" goto :vs15ce64 || goto :error
-if "%1" == "python27" goto :python27 || goto :error
-if "%1" == "python37" goto :python37 || goto :error
+if "%1" == "python27_86" goto :python27_86 || goto :error
+if "%1" == "python37_86" goto :python37_86 || goto :error
+if "%1" == "python37_64" goto :python37_64 || goto :error
 
 if %environment_initialised% EQU 0 goto :error
 goto :success
@@ -49,13 +50,18 @@ set VS_HOME=c:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 call "%VS_HOME%\VC\Auxiliary\Build\vcvarsall.bat" amd64
 goto :EOF
 
-:python27
-call :show_environment "python27"
+:python27_86
+call :show_environment "python27_86"
 set PATH=C:\Python27;c:\Python27\Scripts;%PATH%
 goto :EOF
 
-:python37
-call :show_environment "python37"
+:python37_86
+call :show_environment "python37_86"
+set PATH=%LocalAppData%\Programs\Python\Python37-32;%PATH%
+goto :EOF
+
+:python37_64
+call :show_environment "python37_64"
 set PATH=%LocalAppData%\Programs\Python\Python37;%PATH%
 goto :EOF
 
