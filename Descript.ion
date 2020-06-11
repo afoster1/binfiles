@@ -1,3 +1,4 @@
 ag.exe Silver Searcher (grep alternative)
 ctags.exe Exuberant Ctags
 init.bat Console environment initialiser
+AsmSpy.exe Tool to view assembly references (See https://github.com/mikehadlow/AsmSpy)
