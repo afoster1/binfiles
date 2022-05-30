@@ -14,6 +14,9 @@ set environment_initialised=0
 
 if "%1" == "cppdev86" call :cppdev86 || goto :error
 if "%1" == "cppdev64" call :cppdev64 || goto :error
+if "%1" == "vs17ce" goto :vs17ce || goto :error
+if "%1" == "vs17ce86" goto :vs17ce86 || goto :error
+if "%1" == "vs17ce64" goto :vs17ce64 || goto :error
 if "%1" == "vs15ce86" goto :vs15ce86 || goto :error
 if "%1" == "vs15ce64" goto :vs15ce64 || goto :error
 if "%1" == "python27_86" goto :python27_86 || goto :error
@@ -31,6 +34,7 @@ set environment_name=%1
 set environment_name=%environment_name:"=%
 @echo Initialising %environment_name% environment.
 set environment_initialised=1
+title %environment_name%
 goto :EOF
 
 :cppdev86
@@ -39,6 +43,24 @@ goto :EOF
 
 :cppdev64
 call :vs15ce64 || goto :error
+goto :EOF
+
+:vs17ce
+call :show_environment "vs17ce"
+set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community
+call "%VS_HOME%\Common7\Tools\VsDevCmd.bat"
+goto :EOF
+
+:vs17ce86
+call :show_environment "vs17ce86"
+set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community
+call "%VS_HOME%\VC\Auxiliary\Build\vcvars32.bat"
+goto :EOF
+
+:vs17ce64
+call :show_environment "vs17ce64"
+set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community
+call "%VS_HOME%\VC\Auxiliary\Build\vcvars64.bat"
 goto :EOF
 
 :vs15ce86
