@@ -58,6 +58,16 @@ call :show_environment "python27_86"
 set PATH=C:\Python27;c:\Python27\Scripts;%PATH%
 goto :EOF
 
+:python36_86
+call :show_environment "python36_86"
+set PATH=%LocalAppData%\Programs\Python\Python36-32;%PATH%
+goto :EOF
+
+:python36_64
+call :show_environment "python36_64"
+set PATH=%LocalAppData%\Programs\Python\Python36;%PATH%
+goto :EOF
+
 :python37_86
 call :show_environment "python37_86"
 set PATH=%LocalAppData%\Programs\Python\Python37-32;%PATH%
