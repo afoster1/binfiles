@@ -1,7 +1,8 @@
 ag.exe Silver Searcher (grep alternative)
-ctags.exe Exuberant Ctags
+ctags.exe Universal Ctags (See https://github.com/universal-ctags/ctags-win32)
 init.bat Console environment initialiser
 AsmSpy.exe Tool to view assembly references (See https://github.com/mikehadlow/AsmSpy)
 rg.exe RipGrep search tool
 fzf.exe Command line fuzzy finder. (See https://github.com/junegunn/fzf)
 bat.exe A cat clone with wings. (See https://github.com/sharkdp/bat)
+readtags.exe Companion to universal ctags.
