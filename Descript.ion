@@ -6,3 +6,5 @@ rg.exe RipGrep search tool
 fzf.exe Command line fuzzy finder. (See https://github.com/junegunn/fzf)
 bat.exe A cat clone with wings. (See https://github.com/sharkdp/bat)
 readtags.exe Companion to universal ctags.
+wprStart.cmd Simple script to begin a recording session using Windows Performance Toolkit
+wprStop.cmd Simple script to end a recording session using Windows Performance Toolkit
