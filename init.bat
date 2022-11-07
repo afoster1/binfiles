@@ -92,7 +92,7 @@ goto :EOF
 :vs16p64
 call :show_environment "vs16p64"
 set VS_HOME=C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional
-call "%VS_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x86
+call "%VS_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
 goto :EOF
 
 rem Visual Studio 2017
