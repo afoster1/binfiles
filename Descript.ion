@@ -11,3 +11,4 @@ wprStop.cmd Simple script to end a recording session using Windows Performance T
 gitui.exe Git UI for your terminal (See https://github.com/Extrawurst/gitui)
 procgov32.exe Tool to constrain a process (See https://github.com/lowleveldesign/process-governor)
 procgov64.exe Tool to constrain a process (See https://github.com/lowleveldesign/process-governor)
+op.exe 1Password CLI (See https://1password.com/downloads/command-line/)
