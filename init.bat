@@ -12,19 +12,19 @@ rem This environment variable is set when at least a single environment has
 rem been initialised.  And is used to control the exit status.
 set environment_initialised=0
 
-if "%1" == "cppdev86" call :cppdev86 || goto :error
-if "%1" == "cppdev64" call :cppdev64 || goto :error
+if "%1" == "cpp86" call :cpp86 || goto :error
+if "%1" == "cpp64" call :cpp64 || goto :error
 if "%1" == "vs17p" goto :vs17p || goto :error
-if "%1" == "vs17ce" goto :vs17ce || goto :error
-if "%1" == "vs17ce86" goto :vs17ce86 || goto :error
-if "%1" == "vs17ce64" goto :vs17ce64 || goto :error
+if "%1" == "vs17c" goto :vs17c || goto :error
+if "%1" == "vs17c86" goto :vs17c86 || goto :error
+if "%1" == "vs17c64" goto :vs17c64 || goto :error
 if "%1" == "vs16p" goto :vs16p || goto :error
 if "%1" == "vs16p86" goto :vs16p86 || goto :error
 if "%1" == "vs16p64" goto :vs16p64 || goto :error
 if "%1" == "vs15p" goto :vs15p || goto :error
 if "%1" == "vs14p" goto :vs14p || goto :error
-if "%1" == "vs15ce86" goto :vs15ce86 || goto :error
-if "%1" == "vs15ce64" goto :vs15ce64 || goto :error
+if "%1" == "vs15c86" goto :vs15c86 || goto :error
+if "%1" == "vs15c64" goto :vs15c64 || goto :error
 if "%1" == "python27_86" goto :python27_86 || goto :error
 if "%1" == "python37_86" goto :python37_86 || goto :error
 if "%1" == "python37_64" goto :python37_64 || goto :error
@@ -43,12 +43,12 @@ set environment_initialised=1
 title %environment_name%
 goto :EOF
 
-:cppdev86
-call :vs15ce86 || goto :error
+:cpp86
+call :vs17c86 || goto :error
 goto :EOF
 
-:cppdev64
-call :vs15ce64 || goto :error
+:cpp64
+call :vs17c64 || goto :error
 goto :EOF
 
 rem Visual Studio 2022
@@ -58,20 +58,20 @@ set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Professional
 call "%VS_HOME%\Common7\Tools\VsDevCmd.bat"
 goto :EOF
 
-:vs17ce
-call :show_environment "vs17ce"
+:vs17c
+call :show_environment "vs17c"
 set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community
 call "%VS_HOME%\Common7\Tools\VsDevCmd.bat"
 goto :EOF
 
-:vs17ce86
-call :show_environment "vs17ce86"
+:vs17c86
+call :show_environment "vs17c86"
 set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community
 call "%VS_HOME%\VC\Auxiliary\Build\vcvars32.bat"
 goto :EOF
 
-:vs17ce64
-call :show_environment "vs17ce64"
+:vs17c64
+call :show_environment "vs17c64"
 set VS_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community
 call "%VS_HOME%\VC\Auxiliary\Build\vcvars64.bat"
 goto :EOF
@@ -102,14 +102,14 @@ set VS_HOME=c:\Program Files (x86)\Microsoft Visual Studio\2017\Professional
 call "%VS_HOME%\Common7\Tools\VsDevCmd.bat"
 goto :EOF
 
-:vs15ce86
-call :show_environment "vs15ce86"
+:vs15c86
+call :show_environment "vs15c86"
 set VS_HOME=c:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 call "%VS_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x86
 goto :EOF
 
-:vs15ce64
-call :show_environment "vs15ce64"
+:vs15c64
+call :show_environment "vs15c64"
 set VS_HOME=c:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 call "%VS_HOME%\VC\Auxiliary\Build\vcvarsall.bat" amd64
 goto :EOF
