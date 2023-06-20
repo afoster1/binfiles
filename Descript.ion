@@ -13,3 +13,4 @@ procgov32.exe Tool to constrain a process (See https://github.com/lowleveldesign
 procgov64.exe Tool to constrain a process (See https://github.com/lowleveldesign/process-governor)
 op.exe 1Password CLI (See https://1password.com/downloads/command-line/)
 procexp64.exe SysInterals Process Explorer (see https://live.sysinternals.com/)
+hexyl.exe A terminal hex viewer. (See https://github.com/sharkdp/hexyl)
