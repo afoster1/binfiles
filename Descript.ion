@@ -17,3 +17,4 @@ hexyl.exe A terminal hex viewer. (See https://github.com/sharkdp/hexyl)
 fd.exe Alternative to 'find'.  (See https://github.com/sharkdp/fd)
 pastel.exe Terminal colour tool.  (see https://github.com/sharkdp/pastel)
 depends.exe Tool to discover dll dependencies. (See https://dependencywalker.com/)
+gbundle.bat Create a git bundle of the current directory.
