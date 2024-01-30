@@ -33,7 +33,7 @@ setlocal enabledelayedexpansion
 
 rem Invoke ripgrep, fzf and bat to find the search term
 @for /F "tokens=* USEBACKQ" %%A in (`rg --ignore-case --color=always --line-number --no-heading %1 ^
-| fzf --ansi --color --delimiter ":" --preview "bat --color=always --highlight-line {2} {1}" --preview-window "up,border-bottom,+{2}+3/3,~3"`) do @set _input=%%A
+| fzf --ansi --color "hl:-1:underline,hl+:-1:underline:reverse"  --delimiter ":" --preview "bat --color=always --highlight-line {2} {1}" --preview-window "up,border-bottom,+{2}+3/3,~3"`) do @set _input=%%A
 
 rem Ensure the output hasn't got any problematic characters
 rem set "_input=Th""i\s&& is not good _maybe_!~*???"
