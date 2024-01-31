@@ -1,8 +1,8 @@
-ag.exe Silver Searcher (grep alternative)
+ag.exe Silver Searcher (grep alternative) (See https://github.com/ggreer/the_silver_searcher)
 ctags.exe Universal Ctags (See https://github.com/universal-ctags/ctags-win32)
 init.bat Console environment initialiser
 AsmSpy.exe Tool to view assembly references (See https://github.com/mikehadlow/AsmSpy)
-rg.exe RipGrep search tool
+rg.exe RipGrep search tool (See https://github.com/BurntSushi/ripgrep)
 fzf.exe Command line fuzzy finder. (See https://github.com/junegunn/fzf)
 bat.exe A cat clone with wings. (See https://github.com/sharkdp/bat)
 readtags.exe Companion to universal ctags.
@@ -19,3 +19,4 @@ pastel.exe Terminal colour tool.  (see https://github.com/sharkdp/pastel)
 depends.exe Tool to discover dll dependencies. (See https://dependencywalker.com/)
 gbundle.bat Create a git bundle of the current directory.
 look.bat Script to look for a search term using ripgrep, fzf and bat.
+rclone.exe File sync app (see https://rclone.org/downloads/)
