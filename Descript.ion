@@ -20,3 +20,4 @@ depends.exe Tool to discover dll dependencies. (See https://dependencywalker.com
 gbundle.bat Create a git bundle of the current directory.
 look.bat Script to look for a search term using ripgrep, fzf and bat.
 rclone.exe File sync app (see https://rclone.org/downloads/)
+rclone-v1.65.2-windows-amd64.zip File sync app (see https://rclone.org/downloads/)
