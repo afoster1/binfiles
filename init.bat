@@ -32,6 +32,7 @@ if "%1" == "gpg" goto :gpg || goto :error
 if "%1" == "winsdk100" goto :winsdk100 || goto :error
 if "%1" == "winsdk100_64" goto :winsdk100_64 || goto :error
 if "%1" == "wix3" goto :wix3 || goto :error
+if "%1" == "nodejs" goto :nodejs || goto :error
 
 if %environment_initialised% EQU 0 goto :error
 goto :success
@@ -168,6 +169,12 @@ goto :EOF
 call :show_environment "wix3"
 set WIX_HOME="C:\Program Files (x86)\WiX Toolset v3.11"
 set PATH=%WIX_Home%\bin;%PATH%
+goto :EOF
+
+:nodejs
+call :show_environment "nodejs"
+set NODEJS_HOME="C:\Program Files\nodejs"
+set PATH=%NODEJS_HOME%;%PATH%
 goto :EOF
 
 :error
