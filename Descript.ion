@@ -24,3 +24,4 @@ rclone-v1.65.2-windows-amd64.zip File sync app (see https://rclone.org/downloads
 hashdeep.exe Tool to compute and audit file hashes.  (See https://github.com/jessek/hashdeep)
 delta.exe diff tool (see https://github.com/dandavison/delta)
 restic.exe Backup software from https://github.com/restic/restic
+lazygit.exe A simple terminal UI for git commands (See https://github.com/jesseduffield/lazygit)
