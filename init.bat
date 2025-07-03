@@ -28,6 +28,7 @@ if "%1" == "vs15c64" goto :vs15c64 || goto :error
 if "%1" == "python27_86" goto :python27_86 || goto :error
 if "%1" == "python37_86" goto :python37_86 || goto :error
 if "%1" == "python37_64" goto :python37_64 || goto :error
+if "%1" == "python3" goto :python3 || goto :error
 if "%1" == "gpg" goto :gpg || goto :error
 if "%1" == "winsdk100" goto :winsdk100 || goto :error
 if "%1" == "winsdk100_64" goto :winsdk100_64 || goto :error
@@ -147,6 +148,11 @@ goto :EOF
 :python37_64
 call :show_environment "python37_64"
 set PATH=%LocalAppData%\Programs\Python\Python37;%PATH%
+goto :EOF
+
+:python3
+call :show_environment "python3"
+set PATH=%LocalAppData%\Programs\Python\Python313;%LocalAppData%\Programs\Python\Python313\Scripts;%PATH%
 goto :EOF
 
 :gpg
