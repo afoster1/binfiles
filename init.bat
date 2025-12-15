@@ -14,6 +14,8 @@ set environment_initialised=0
 
 if "%1" == "cpp86" call :cpp86 || goto :error
 if "%1" == "cpp64" call :cpp64 || goto :error
+if "%1" == "vs18p" goto :vs18p || goto :error
+if "%1" == "vs18c" goto :vs18c || goto :error
 if "%1" == "vs17p" goto :vs17p || goto :error
 if "%1" == "vs17c" goto :vs17c || goto :error
 if "%1" == "vs17c86" goto :vs17c86 || goto :error
@@ -54,6 +56,19 @@ goto :EOF
 
 :cpp64
 call :vs17c64 || goto :error
+goto :EOF
+
+rem Visual Studio 2026
+:vs18p
+call :show_environment "vs18p"
+set VS_HOME=C:\Program Files\Microsoft Visual Studio\18\Professional
+call "%VS_HOME%\Common7\Tools\VsDevCmd.bat"
+goto :EOF
+
+:vs18c
+call :show_environment "vs18c"
+set VS_HOME=C:\Program Files\Microsoft Visual Studio\18\Community
+call "%VS_HOME%\Common7\Tools\VsDevCmd.bat"
 goto :EOF
 
 rem Visual Studio 2022
