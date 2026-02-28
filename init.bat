@@ -38,6 +38,7 @@ if "%1" == "wix3" goto :wix3 || goto :error
 if "%1" == "nodejs" goto :nodejs || goto :error
 if "%1" == "rojo" goto :rojo || goto :error
 if "%1" == "java" goto :java || goto :error
+if "%1" == "obsidian" goto :obsidian || goto :error
 
 if %environment_initialised% EQU 0 goto :error
 goto :success
@@ -210,6 +211,11 @@ goto :EOF
 call :show_environment "java"
 set JAVA_HOME="C:\Program Files\Java\jdk-25"
 set PATH=%JAVA_HOME%\bin;%PATH%
+goto :EOF
+
+:obsidian
+call :show_environment "obsidian"
+set PATH=%LocalAppData%\Programs\Obsidian;%PATH%
 goto :EOF
 
 :error
