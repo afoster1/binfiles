@@ -25,3 +25,4 @@ hashdeep.exe Tool to compute and audit file hashes.  (See https://github.com/jes
 delta.exe diff tool (see https://github.com/dandavison/delta)
 restic.exe Backup software from https://github.com/restic/restic
 lazygit.exe A simple terminal UI for git commands (See https://github.com/jesseduffield/lazygit)
+git-sizer.exe Computes size metrics for a local Git repository. (See https://github.com/github/git-sizer)
