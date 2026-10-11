@@ -1,0 +1,379 @@
+\documentclass[12pt,a4paper]{article}
+
+% ------------------------------------------------------------
+%   Packages
+% ------------------------------------------------------------
+\usepackage{fontspec}
+\usepackage{geometry}
+\usepackage{pdflscape}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{tocloft}
+\usepackage{microtype}
+\usepackage[table]{xcolor}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{color}
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{array}
+\usepackage{calc}
+\usepackage{longtable}
+\usepackage{booktabs}
+
+% ------------------------------------------------------------
+%   Page layout
+% ------------------------------------------------------------
+\geometry{
+  left=30mm,
+  right=30mm,
+  top=25mm,
+  bottom=25mm
+}
+
+\setstretch{1.2}
+
+% ------------------------------------------------------------
+%   Fonts (modern, professional)
+% ------------------------------------------------------------
+\setmainfont{Cambria}
+\setsansfont{Segoe UI}
+\setmonofont{Consolas}
+
+% ------------------------------------------------------------
+%   Section formatting
+% ------------------------------------------------------------
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+% ------------------------------------------------------------
+%   Professional callout blocks for Pandoc / report-style notes
+% ------------------------------------------------------------
+\definecolor{noteBg}{RGB}{239,245,255}
+\definecolor{noteBorder}{RGB}{96,125,139}
+\definecolor{noteText}{RGB}{28,51,64}
+\definecolor{tipBg}{RGB}{236,249,240}
+\definecolor{tipBorder}{RGB}{68,140,92}
+\definecolor{tipText}{RGB}{23,76,50}
+\definecolor{importantBg}{RGB}{255,248,228}
+\definecolor{importantBorder}{RGB}{184,120,0}
+\definecolor{importantText}{RGB}{94,65,0}
+\definecolor{warningBg}{RGB}{254,235,237}
+\definecolor{warningBorder}{RGB}{180,52,52}
+\definecolor{warningText}{RGB}{96,24,27}
+\definecolor{red}{RGB}{180,52,52}
+\definecolor{green}{RGB}{68,140,92}
+\definecolor{yellow}{RGB}{184,120,0}
+\definecolor{orange}{RGB}{230,126,34}
+\definecolor{blue}{RGB}{96,125,139}
+\definecolor{indigo}{RGB}{75,0,130}
+\definecolor{violet}{RGB}{128,0,255}
+\definecolor{quoteBg}{RGB}{247,248,250}
+\definecolor{quoteBorder}{RGB}{180,188,196}
+\definecolor{quoteText}{RGB}{60,68,76}
+
+\newcommand{\calloutheader}[2]{%
+  \if\relax\detokenize{#1}\relax
+    % no label: omit the header line and the extra leading spacer
+  \else
+    \noindent\textcolor{#2}{\textbf{\large #1}}\par\vspace{2pt}%
+  \fi
+}
+
+\newmdenv[
+  backgroundcolor=noteBg,
+  linecolor=noteBorder!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  leftmargin=0pt,
+  rightmargin=0pt,
+  fontcolor=noteText
+]{Note}
+
+\newmdenv[
+  backgroundcolor=blue!20,
+  linecolor=blue!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  leftmargin=0pt,
+  rightmargin=0pt,
+  fontcolor=white
+]{Blue}
+
+\newmdenv[
+  backgroundcolor=tipBg,
+  linecolor=tipBorder!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=tipText
+]{Tip}
+
+\newmdenv[
+  backgroundcolor=green!20,
+  linecolor=green!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=white
+]{Green}
+
+\newmdenv[
+  backgroundcolor=importantBg,
+  linecolor=importantBorder!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=importantText
+]{Important}
+
+\newmdenv[
+  backgroundcolor=yellow!20,
+  linecolor=yellow!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=black
+]{Yellow}
+
+\newmdenv[
+  backgroundcolor=orange!20,
+  linecolor=orange!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=black
+]{Orange}
+
+\newmdenv[
+  backgroundcolor=warningBg,
+  linecolor=warningBorder!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=warningText
+]{Warning}
+
+\newmdenv[
+  backgroundcolor=red!20,
+  linecolor=red!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=white
+]{Red}
+
+\newmdenv[
+  backgroundcolor=indigo!20,
+  linecolor=indigo!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=white
+]{Indigo}
+
+\newmdenv[
+  backgroundcolor=violet!20,
+  linecolor=violet!20,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=10pt,
+  skipbelow=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=12pt,
+  innerrightmargin=12pt,
+  fontcolor=white
+]{Violet}
+
+\newmdenv[
+  backgroundcolor=quoteBg,
+  linecolor=quoteBorder,
+  linewidth=0.5pt,
+  roundcorner=2pt,
+  skipabove=8pt,
+  skipbelow=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  fontcolor=quoteText
+]{QuoteBlock}
+
+\newmdenv[
+  backgroundcolor=noteBg,
+  linecolor=noteBorder,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=8pt,
+  skipbelow=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  fontcolor=noteText
+]{Shaded}
+
+\newmdenv[
+  backgroundcolor=noteBg,
+  linecolor=noteBorder,
+  linewidth=0.8pt,
+  roundcorner=4pt,
+  skipabove=8pt,
+  skipbelow=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  fontcolor=noteText
+]{CalloutHighlighting}
+
+% ------------------------------------------------------------
+%   Pandoc syntax-highlighting compatibility
+% ------------------------------------------------------------
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.50,0.50,0.50}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.50,0.50,0.50}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.50,0.50,0.50}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.50,0.50,0.50}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+
+% Pandoc longtable compatibility
+% Pandoc may emit \LTcaptype{none} for table-like longtables; define the
+% corresponding counter so XeLaTeX does not fail compiling the generated file.
+\makeatletter
+\@ifundefined{c@none}{\newcounter{none}}{}
+\makeatother
+\def\LTcaptype{table}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.1}
+
+% Pandoc compatibility: newer Pandoc versions emit \tightlist for compact lists.
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}%
+  \setlength{\parskip}{0pt}%
+}
+
+% Pandoc compatibility for image wrapping and bounded boxes.
+\providecommand{\pandocbounded}[1]{#1}
+
+% ------------------------------------------------------------
+%   Header & Footer
+% ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\leftmark}
+\rhead{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ------------------------------------------------------------
+%   Table of contents formatting
+% ------------------------------------------------------------
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsecpagefont}{\bfseries}
+
+% ------------------------------------------------------------
+%   Title Page
+% ------------------------------------------------------------
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+
+    {\Huge\bfseries $title$ \par}
+    \vspace{0.8cm}
+    {\Large $subtitle$ \par}
+
+    \vfill
+    {\large $date$ \par}
+\end{titlepage}
+
+% ------------------------------------------------------------
+%   Table of Contents
+% ------------------------------------------------------------
+\tableofcontents
+\newpage
+
+% ------------------------------------------------------------
+%   Main Content
+% ------------------------------------------------------------
+$body$
+
+\end{document}

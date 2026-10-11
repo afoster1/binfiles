@@ -122,9 +122,7 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
     definition = load_doc_definition(doc_path)
     base_dir = doc_path.parent
 
-    template_value = definition.get("template")
-    if not template_value:
-        raise SystemExit(f"ERROR: definition file is missing a 'template' entry: {doc_path}")
+    template_value = definition.get("template") or "docbuild-template.tex"
 
     template_path = resolve_config_path(base_dir, template_value)
     if not template_path.exists():
