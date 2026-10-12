@@ -114,6 +114,13 @@ local function has_class(block, name)
   return false
 end
 
+local function has_docbuild_directive_class(block)
+  return has_class(block, "doc-build")
+    or has_class(block, "docbuild")
+    or has_class(block, "doc-build-global")
+    or has_class(block, "docbuild-global")
+end
+
 local function parse_book_builder_yaml(text)
   local result = {}
   local current_key = nil
@@ -406,6 +413,13 @@ local function apply_global_directive(data)
       directive_state.global.callout_label_overrides = labels
     end
   end
+
+  if data["page-break"] ~= nil then
+    local page_break = parse_boolean(data["page-break"])
+    if page_break == true then
+      directive_state.global.page_break = true
+    end
+  end
 end
 
 local function apply_pending_directive(data)
@@ -432,6 +446,13 @@ local function apply_pending_directive(data)
       directive_state.pending.callout_label_overrides = labels
     end
   end
+
+  if data["page-break"] ~= nil then
+    local page_break = parse_boolean(data["page-break"])
+    if page_break == true then
+      directive_state.pending.page_break = true
+    end
+  end
 end
 
 local function handle_directive(block)
@@ -440,10 +461,24 @@ local function handle_directive(block)
     return {}
   end
 
-  if has_class(block, "doc-build-global") then
+  local page_break = false
+  if data["page-break"] ~= nil then
+    page_break = parse_boolean(data["page-break"]) == true
+  end
+
+  if has_class(block, "doc-build-global") or has_class(block, "docbuild-global") then
     apply_global_directive(data)
-  elseif has_class(block, "doc-build") then
+    if page_break then
+      return { pandoc.RawBlock("latex", "\\clearpage") }
+    end
+    return {}
+  elseif has_class(block, "doc-build") or has_class(block, "docbuild") then
     apply_pending_directive(data)
+    if page_break then
+      directive_state.pending.page_break = nil
+      return { pandoc.RawBlock("latex", "\\clearpage") }
+    end
+    return {}
   end
 
   return {}
@@ -606,7 +641,7 @@ local function convert_fenced_callout(block)
 end
 
 function CodeBlock(block)
-  if not has_class(block, "doc-build") and not has_class(block, "doc-build-global") then
+  if not has_docbuild_directive_class(block) then
     local fenced_callout = convert_fenced_callout(block)
     if fenced_callout then
       return fenced_callout
