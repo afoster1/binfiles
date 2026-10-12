@@ -9,6 +9,7 @@
 #    chapters:
 #      - chapter1.md
 #      - chapter2.md
+#    chapter-page-breaks: true
 #    filters:
 #      - docbuild.lua
 #    sort-property: sort_index
@@ -21,6 +22,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 try:
@@ -45,6 +47,34 @@ def resolve_config_path(base_dir: Path, value: str | Path) -> Path:
     if not path.is_absolute():
         path = (base_dir / path).resolve()
     return path
+
+def parse_boolean_value(value) -> bool | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+
+    normalized = str(value).strip().lower()
+    if normalized in {"true", "yes", "y", "1"}:
+        return True
+    if normalized in {"false", "no", "n", "0"}:
+        return False
+    return None
+
+def deduplicate_paths(paths: list[Path]) -> list[Path]:
+    seen: set[str] = set()
+    unique: list[Path] = []
+    for path in paths:
+        resolved = path.resolve(strict=False)
+        key = str(resolved).lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(path)
+    return unique
+
 
 def ensure_output_file_writable(path: Path) -> None:
     try:
@@ -118,7 +148,7 @@ def load_frontmatter_metadata(path: Path) -> dict:
 
     return data if isinstance(data, dict) else {}
 
-def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str], Path, list[Path]]:
+def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str], Path, list[Path], Path | None]:
     definition = load_doc_definition(doc_path)
     base_dir = doc_path.parent
 
@@ -158,6 +188,28 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
             chapter_paths,
             key=lambda chapter: parse_frontmatter_sort_value(chapter, sort_field),
         )
+
+    chapter_paths = deduplicate_paths(chapter_paths)
+
+    chapter_page_breaks = parse_boolean_value(definition.get("chapter-page-breaks"))
+    if chapter_page_breaks is None:
+        chapter_page_breaks = parse_boolean_value(definition.get("chapter_page_breaks"))
+
+    temp_input_path = None
+    input_paths = list(chapter_paths)
+    if chapter_page_breaks:
+        tmp_handle = tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8", dir=str(base_dir))
+        tmp_handle.close()
+        temp_input_path = Path(tmp_handle.name)
+        with temp_input_path.open("w", encoding="utf-8") as fh:
+            for index, chapter in enumerate(chapter_paths):
+                if index > 0:
+                    fh.write("\\clearpage\n\n")
+                chapter_text = chapter.read_text(encoding="utf-8")
+                fh.write(chapter_text)
+                if not chapter_text.endswith("\n"):
+                    fh.write("\n")
+        input_paths = [temp_input_path]
 
     filters_value = definition.get("filters", [])
     if filters_value is None:
@@ -199,7 +251,7 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
             metadata[field] = str(definition[field])
 
     command = ["pandoc"]
-    command.extend(str(path) for path in chapter_paths)
+    command.extend(str(path) for path in input_paths)
     command.extend(["--from=markdown", "--template", str(template_path)])
     for field, value in metadata.items():
         command.extend(["--metadata", f"{field}={value}"])
@@ -212,7 +264,7 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
         for chapter in chapter_paths:
             print(f"  - {chapter.name} ({parse_frontmatter_sort_value(chapter, sort_field)})")
 
-    return command, output_file, chapter_paths
+    return command, output_file, chapter_paths, temp_input_path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build a PDF from Markdown chapters using a YAML document definition.")
@@ -227,13 +279,21 @@ def main() -> None:
         raise SystemExit("ERROR: --definition is required. Pass the path to the YAML document definition file.")
 
     definition_path = Path(args.definition).expanduser().resolve()
-    command, output_pdf, _ = doc_build_command(definition_path, verbose=args.verbose)
+    command, output_pdf, _, temp_input_path = doc_build_command(definition_path, verbose=args.verbose)
 
     env = os.environ.copy()
     if args.verbose:
         env["DB_VERBOSE"] = "1"
 
-    run_command(command, env=env)
+    try:
+        run_command(command, env=env)
+    finally:
+        if temp_input_path is not None:
+            try:
+                temp_input_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+
     print(f"PDF generated: {output_pdf}")
 
 if __name__ == "__main__":
