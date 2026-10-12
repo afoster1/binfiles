@@ -6,6 +6,7 @@
 #    title: Title
 #    subtitle: Subtitle
 #    date: YYYY-MM-DD
+#    version: 1.1a
 #    chapters:
 #      - chapter1.md
 #      - chapter2.md
@@ -241,12 +242,12 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
     metadata: dict[str, str] = {}
     for chapter in chapter_paths:
         chapter_metadata = load_frontmatter_metadata(chapter)
-        for field in ("title", "subtitle", "date", "author", "subject", "keywords"):
+        for field in ("title", "subtitle", "date", "author", "subject", "keywords", "version"):
             value = chapter_metadata.get(field)
             if value is not None and field not in metadata:
                 metadata[field] = str(value)
 
-    for field in ("title", "subtitle", "date", "author", "subject", "keywords"):
+    for field in ("title", "subtitle", "date", "author", "subject", "keywords", "version"):
         if field in definition and definition[field] is not None:
             metadata[field] = str(definition[field])
 
