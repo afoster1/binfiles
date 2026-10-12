@@ -155,6 +155,102 @@ local function latex(ltx)
   return pandoc.Blocks(pandoc.RawBlock('latex', ltx))
 end
 
+local function escape_latex_text(raw_text)
+  local text = tostring(raw_text or "")
+  text = text:gsub("\\", "\\textbackslash{}")
+  text = text:gsub("&", "\\&")
+  text = text:gsub("%$", "\\$")
+  text = text:gsub("#", "\\#")
+  text = text:gsub("_", "\\_")
+  text = text:gsub("%{", "\\{")
+  text = text:gsub("%}", "\\}")
+  text = text:gsub("~", "\\textasciitilde{}")
+  text = text:gsub("^%s+", "")
+  text = text:gsub("%s+$", "")
+  return text
+end
+
+local function first_header_text(blocks)
+  if type(blocks) ~= "table" then
+    return nil
+  end
+
+  for _, item in ipairs(blocks) do
+    if item and item.t == "Div" and item.content then
+      local nested = first_header_text(item.content)
+      if nested and tostring(nested):match('%S') then
+        return nested
+      end
+    end
+
+    if item and item.t == "Header" then
+      local title = pandoc.utils.stringify(item.content)
+      if title and tostring(title):match('%S') then
+        return title
+      end
+    end
+
+    if item and type(item) == "table" and item.content then
+      local nested = first_header_text(item.content)
+      if nested and tostring(nested):match('%S') then
+        return nested
+      end
+    end
+  end
+
+  return nil
+end
+
+local function wrap_in_landscape(block_like, title_source)
+  local blocks = {}
+
+  if block_like == nil then
+    return {}
+  end
+
+  if type(block_like) == "table" then
+    if block_like.t == "Div" and block_like.content then
+      for _, item in ipairs(block_like.content) do
+        table.insert(blocks, item)
+      end
+    elseif block_like.t then
+      table.insert(blocks, block_like)
+    else
+      for _, item in ipairs(block_like) do
+        table.insert(blocks, item)
+      end
+    end
+  else
+    table.insert(blocks, block_like)
+  end
+
+  local header_setup = '\\gdef\\docbuildlandscapeheadertext{}'
+  if title_source == "previous-section" then
+    header_setup = '\\gdef\\docbuildlandscapeheadertext{\\leftmark}'
+  else
+    local landscape_title = first_header_text(blocks)
+    if landscape_title and tostring(landscape_title):match('%S') then
+      local safe_title = escape_latex_text(landscape_title)
+      header_setup = '\\gdef\\docbuildlandscapeheadertext{' .. safe_title .. '}'
+    end
+  end
+
+  local wrapped = {
+    pandoc.RawBlock('latex', '\\clearpage'),
+    pandoc.RawBlock('latex', header_setup),
+    pandoc.RawBlock('latex', '\\begin{landscapepage}')
+  }
+
+  for _, item in ipairs(blocks) do
+    table.insert(wrapped, item)
+  end
+
+  table.insert(wrapped, pandoc.RawBlock('latex', '\\end{landscapepage}'))
+  table.insert(wrapped, pandoc.RawBlock('latex', '\\clearpage'))
+
+  return wrapped
+end
+
 local function apply_table_widths(table_obj, widths)
   if not widths then
     return table_obj
@@ -551,6 +647,40 @@ function Table(tbl)
 end
 
 function Div(div)
+  if has_class(div, "docbuild-landscape-page") then
+    local filtered_classes = {}
+    for _, cls in ipairs(get_classes(div)) do
+      if tostring(cls) ~= "docbuild-landscape-page" then
+        table.insert(filtered_classes, cls)
+      end
+    end
+
+    if div.attr then
+      div.attr.classes = filtered_classes
+    else
+      div.attr = pandoc.Attr("", filtered_classes, {})
+    end
+
+    return wrap_in_landscape(div, "previous-section")
+  end
+
+  if has_class(div, "docbuild-landscape-section") then
+    local filtered_classes = {}
+    for _, cls in ipairs(get_classes(div)) do
+      if tostring(cls) ~= "docbuild-landscape-section" then
+        table.insert(filtered_classes, cls)
+      end
+    end
+
+    if div.attr then
+      div.attr.classes = filtered_classes
+    else
+      div.attr = pandoc.Attr("", filtered_classes, {})
+    end
+
+    return wrap_in_landscape(div, "first-header")
+  end
+
   local style_map = directive_state.pending.callout_style or directive_state.global.callout_style
   local label_overrides = directive_state.pending.callout_label_overrides or directive_state.global.callout_label_overrides
 

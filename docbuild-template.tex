@@ -14,6 +14,7 @@
 \usepackage{tocloft}
 \usepackage{microtype}
 \usepackage[table]{xcolor}
+\usepackage{tikz}
 \usepackage[framemethod=tikz]{mdframed}
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -338,9 +339,48 @@
 % ------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}}
 \lhead{\leftmark}
 \rhead{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrulewidth}{2pt}
+
+% ------------------------------------------------------------
+%   Full-page landscape blocks for wide content
+% ------------------------------------------------------------
+\newcommand{\docbuildlandscapeheadertext}{}
+
+\newcommand{\landscapeheadertext}{\docbuildlandscapeheadertext}
+
+\newcommand{\landscapeheader}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    % Match the portrait header behaviour: the underline spans the entire header block, not just
+    % the title text. Keep the current title/page-number placements and use named nodes so the
+    % rule follows the actual header content.
+    \node[rotate=90,anchor=south west,inner sep=0pt] (landscapeTitle) at ([xshift=14mm,yshift=25mm]current page.south west) {\normalfont\small\landscapeheadertext};
+    \node[rotate=90,anchor=south east,inner sep=0pt] (landscapePageNumber) at ([xshift=-196mm,yshift=273mm]current page.south east) {\normalfont\small\thepage};
+    \draw[line width=2pt] ([xshift=2mm]landscapeTitle.south west) -- ([xshift=2mm]landscapePageNumber.south east);
+  \end{tikzpicture}%
+}
+
+\newenvironment{landscapepage}{%
+  \clearpage
+  \begingroup
+  \thispagestyle{empty}%
+  \pagestyle{empty}%
+  \begin{landscape}%
+  \AddToHook{shipout/foreground}[docbuild-landscape]{\landscapeheader}%
+}{%
+  \end{landscape}%
+  \RemoveFromHook{shipout/foreground}[docbuild-landscape]%
+  \clearpage
+  \endgroup
+  \pagestyle{fancy}%
+  \fancyhf{}
+  \lhead{\leftmark}
+  \rhead{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}%
+}
 
 % ------------------------------------------------------------
 %   Table of contents formatting
