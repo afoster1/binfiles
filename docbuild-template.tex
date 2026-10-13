@@ -421,14 +421,20 @@
         \colorbox{docbuildMetaBack}{%
         \begin{minipage}{\dimexpr\linewidth-2\fboxsep}
             \vspace{8pt}
+            $if(author)$
             {\small\textbf{PREPARED BY}}\par
-            $if(author)$$author$$else$Unknown$endif$\par
+            $author$\par
+            $endif$
+            $if(date)$
             \vspace{10pt}
             {\small\textbf{DATE}}\par
-            $if(date)$$date$$else$\today$endif$\par
+            $date$\par
+            $endif$
+            $if(version)$
             \vspace{10pt}
             {\small\textbf{VERSION}}\par
-            $if(version)$$version$$else$1.0$endif$
+            $version$
+            $endif$
             \vspace{8pt}
         \end{minipage}%
         }
