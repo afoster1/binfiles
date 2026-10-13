@@ -67,6 +67,92 @@ def parse_boolean_value(value) -> bool | None:
         return False
     return None
 
+
+def convert_obsidian_embed_images(text: str, source_path: Path | None = None, temp_dir: Path | None = None, definition_dir: Path | None = None, assets_dir: Path | None = None, verbose: bool = False) -> str:
+    pattern = re.compile(r"!\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]")
+
+    def resolve_target_path(image_path: str) -> str:
+        candidate = Path(image_path)
+        candidate_exists = False
+
+        if not candidate.is_absolute():
+            checked: list[Path] = []
+
+            if assets_dir is not None:
+                assets_name = assets_dir.name.lower()
+                already_in_assets = bool(candidate.parts) and candidate.parts[0].lower() == assets_name
+                if not already_in_assets:
+                    checked.append((assets_dir / candidate).resolve(strict=False))
+
+            if definition_dir is not None:
+                checked.append((definition_dir / candidate).resolve(strict=False))
+
+            if source_path is not None:
+                checked.append((source_path.parent / candidate).resolve(strict=False))
+
+            if temp_dir is not None:
+                checked.append((temp_dir / candidate).resolve(strict=False))
+
+            for checked_path in checked:
+                if checked_path.exists():
+                    candidate = checked_path.resolve(strict=False)
+                    candidate_exists = True
+                    break
+
+        if not candidate_exists:
+            if candidate.is_absolute():
+                candidate = candidate.resolve(strict=False)
+            else:
+                for base in (
+                    source_path.parent if source_path is not None else None,
+                    definition_dir,
+                    temp_dir,
+                    Path.cwd(),
+                ):
+                    if base is not None:
+                        candidate = (base / candidate).resolve(strict=False)
+                        break
+                else:
+                    candidate = candidate.resolve(strict=False)
+
+        return candidate.as_posix()
+
+    def replace(match: re.Match[str]) -> str:
+        image_path = match.group(1).strip()
+        if not image_path:
+            return match.group(0)
+
+        resolved_path = Path(resolve_target_path(image_path)).resolve(strict=False)
+        src_value = resolved_path.as_posix().replace('\\', '/')
+        if any(ch.isspace() for ch in src_value) or any(ch in src_value for ch in "()[]"):
+            src_value = f"<{src_value}>"
+        size = match.group(2)
+        if size and size.strip():
+            size_value = size.strip()
+            if not size_value.lower().endswith("px") and "x" not in size_value.lower():
+                size_value = f"{size_value}px"
+            return f'![]({src_value}){{width={size_value}}}'
+
+        return f'![]({src_value})'
+
+    return pattern.sub(replace, text)
+
+
+def create_temp_markdown_copy(source_path: Path, base_dir: Path, assets_dir: Path | None = None, verbose: bool = False) -> Path:
+    temp_handle = tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8", dir=str(base_dir))
+    temp_handle.close()
+    temp_path = Path(temp_handle.name)
+
+    original_text = source_path.read_text(encoding="utf-8")
+    converted_text = convert_obsidian_embed_images(original_text, source_path=source_path, temp_dir=base_dir, definition_dir=base_dir, assets_dir=assets_dir, verbose=verbose)
+    with temp_path.open("w", encoding="utf-8") as fh:
+        fh.write(converted_text)
+        if not converted_text.endswith("\n"):
+            fh.write("\n")
+
+    return temp_path
+
+
 def deduplicate_paths(paths: list[Path]) -> list[Path]:
     seen: set[str] = set()
     unique: list[Path] = []
@@ -199,8 +285,18 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
     if chapter_page_breaks is None:
         chapter_page_breaks = parse_boolean_value(definition.get("chapter_page_breaks"))
 
+    assets_folder_value = definition.get("assets-folder")
+    if assets_folder_value is None:
+        assets_folder_value = definition.get("assets_folder")
+
+    assets_dir = None
+    if assets_folder_value is not None and str(assets_folder_value).strip() != "":
+        assets_dir = resolve_config_path(base_dir, str(assets_folder_value))
+        if not assets_dir.exists():
+            raise SystemExit(f"ERROR: assets folder not found: {assets_dir}")
+
     temp_input_path = None
-    input_paths = list(chapter_paths)
+    input_paths = []
     if chapter_page_breaks:
         tmp_handle = tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8", dir=str(base_dir))
         tmp_handle.close()
@@ -209,11 +305,13 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
             for index, chapter in enumerate(chapter_paths):
                 if index > 0:
                     fh.write("\\clearpage\n\n")
-                chapter_text = chapter.read_text(encoding="utf-8")
+                chapter_text = convert_obsidian_embed_images(chapter.read_text(encoding="utf-8"), source_path=chapter, temp_dir=base_dir, definition_dir=base_dir, assets_dir=assets_dir, verbose=verbose)
                 fh.write(chapter_text)
                 if not chapter_text.endswith("\n"):
                     fh.write("\n")
         input_paths = [temp_input_path]
+    else:
+        input_paths = [create_temp_markdown_copy(chapter, base_dir, assets_dir=assets_dir, verbose=verbose) for chapter in chapter_paths]
 
     filters_value = definition.get("filters", [])
     if filters_value is None:
