@@ -3,6 +3,7 @@
 # To build a document use a command like `python docbuild.py --definition [definition.yaml]`
 # Where the `definition.yaml` file is for example:
 #    template: template.tex
+#    cover-template: cover-page.tex
 #    title: Title
 #    subtitle: Subtitle
 #    date: YYYY-MM-DD
@@ -238,6 +239,47 @@ def load_frontmatter_metadata(path: Path) -> dict:
 
     return data if isinstance(data, dict) else {}
 
+
+def apply_cover_template(template_path: Path, cover_template_value: str | Path | None, base_dir: Path) -> Path:
+    if cover_template_value is None or str(cover_template_value).strip() == "":
+        return template_path
+
+    cover_path = resolve_config_path(base_dir, cover_template_value)
+    if not cover_path.exists():
+        fallback_cover_path = resolve_config_path(ROOT, cover_template_value)
+        if fallback_cover_path.exists():
+            cover_path = fallback_cover_path
+    if not cover_path.exists():
+        raise SystemExit(f"ERROR: cover template file not found: {cover_path}")
+
+    cover_text = cover_path.read_text(encoding="utf-8")
+    template_text = template_path.read_text(encoding="utf-8")
+
+    if "$body$" in cover_text or "\\begin{document}" in cover_text or "\\end{document}" in cover_text:
+        raise SystemExit(
+            f"ERROR: cover template '{cover_path}' is a full document template and cannot be used as a cover page. "
+            "Use a fragment containing only the titlepage content, or set 'template' to the full document template instead."
+        )
+
+    title_start = template_text.find("\\begin{titlepage}")
+    title_end_marker = "\\end{titlepage}"
+    title_end = template_text.find(title_end_marker)
+    if title_start != -1 and title_end != -1 and title_end >= title_start:
+        title_end += len(title_end_marker)
+        combined_text = template_text[:title_start] + cover_text + template_text[title_end:]
+    else:
+        document_start = template_text.find("\\begin{document}")
+        if document_start == -1:
+            return template_path
+        document_start += len("\\begin{document}")
+        combined_text = template_text[:document_start] + "\n" + cover_text + "\n" + template_text[document_start:]
+
+    temp_handle = tempfile.NamedTemporaryFile("w", suffix=".tex", delete=False, encoding="utf-8", dir=str(base_dir))
+    temp_handle.write(combined_text)
+    temp_handle.close()
+    return Path(temp_handle.name)
+
+
 def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str], Path, list[Path], Path | None]:
     definition = load_doc_definition(doc_path)
     base_dir = doc_path.parent
@@ -251,6 +293,15 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
             template_path = fallback_template_path
     if not template_path.exists():
         raise SystemExit(f"ERROR: template file not found: {template_path}")
+
+    cover_template_value = definition.get("cover-template")
+    if cover_template_value is None:
+        cover_template_value = definition.get("cover_template")
+    if cover_template_value is None or str(cover_template_value).strip() == "":
+        default_cover_path = resolve_config_path(ROOT, "docbuild-cover.tex")
+        if default_cover_path.exists():
+            cover_template_value = default_cover_path
+    template_path = apply_cover_template(template_path, cover_template_value, base_dir)
 
     chapters_value = definition.get("chapters")
     if chapters_value is None or not isinstance(chapters_value, list) or not chapters_value:

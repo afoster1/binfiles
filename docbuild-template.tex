@@ -399,51 +399,6 @@
 % ------------------------------------------------------------
 \begin{document}
 
-\begin{titlepage}
-    \newgeometry{left=0mm,right=0mm,top=0mm,bottom=0mm}
-    \thispagestyle{empty}
-
-    \begin{tikzpicture}[remember picture,overlay]
-        \fill[docbuildBlue] (current page.north west) rectangle ([xshift=42mm]current page.south west);
-    \end{tikzpicture}
-
-    \vspace*{28mm}
-    \noindent\hspace*{60mm}
-    {\fontsize{38}{42}\selectfont\bfseries $title$ \par}
-
-    \vspace{14mm}
-    \noindent\hspace*{60mm}
-    {\fontsize{20}{24}\selectfont $if(subtitle)$$subtitle$$endif$ \par}
-
-    \vfill
-    \noindent\hspace*{60mm}
-    \begin{minipage}{0.70\textwidth}
-        \colorbox{docbuildMetaBack}{%
-        \begin{minipage}{\dimexpr\linewidth-2\fboxsep}
-            \vspace{8pt}
-            $if(author)$
-            {\small\textbf{PREPARED BY}}\par
-            $author$\par
-            $endif$
-            $if(date)$
-            \vspace{10pt}
-            {\small\textbf{DATE}}\par
-            $date$\par
-            $endif$
-            $if(version)$
-            \vspace{10pt}
-            {\small\textbf{VERSION}}\par
-            $version$
-            $endif$
-            \vspace{8pt}
-        \end{minipage}%
-        }
-    \end{minipage}
-
-    \vspace*{22mm}
-    \restoregeometry
-\end{titlepage}
-
 % ------------------------------------------------------------
 %   Table of Contents
 % ------------------------------------------------------------
