@@ -14,17 +14,20 @@
 #    filters:
 #      - docbuild.lua
 #    sort-property: sort_index
+#    assets-folder: path/to/assets
 #    output: output.pdf
 
 from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from urllib.parse import quote
 
 try:
     import yaml
@@ -253,7 +256,7 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
 
     command = ["pandoc"]
     command.extend(str(path) for path in input_paths)
-    command.extend(["--from=markdown", "--template", str(template_path)])
+    command.extend(["--from=markdown+raw_tex", "--template", str(template_path)])
     for field, value in metadata.items():
         command.extend(["--metadata", f"{field}={value}"])
     for filter_path in filter_paths:
