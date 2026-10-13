@@ -78,6 +78,8 @@
 \definecolor{quoteBg}{RGB}{247,248,250}
 \definecolor{quoteBorder}{RGB}{180,188,196}
 \definecolor{quoteText}{RGB}{60,68,76}
+\definecolor{docbuildBlue}{RGB}{0,53,89}
+\definecolor{docbuildMetaBack}{RGB}{255,255,255}
 
 \newcommand{\calloutheader}[2]{%
   \if\relax\detokenize{#1}\relax
@@ -398,19 +400,42 @@
 \begin{document}
 
 \begin{titlepage}
-    \centering
-    \vspace*{1.5cm}
+    \newgeometry{left=0mm,right=0mm,top=0mm,bottom=0mm}
+    \thispagestyle{empty}
 
-    {\Huge\bfseries $title$ \par}
-    \vspace{0.8cm}
-    {\Large $subtitle$ \par}
-    $if(version)$
-    \vspace{0.2cm}
-    {\normalsize Version: $version$ \par}
-    $endif$
+    \begin{tikzpicture}[remember picture,overlay]
+        \fill[docbuildBlue] (current page.north west) rectangle ([xshift=42mm]current page.south west);
+    \end{tikzpicture}
+
+    \vspace*{28mm}
+    \noindent\hspace*{60mm}
+    {\fontsize{38}{42}\selectfont\bfseries $title$ \par}
+
+    \vspace{14mm}
+    \noindent\hspace*{60mm}
+    {\fontsize{20}{24}\selectfont $if(subtitle)$$subtitle$$endif$ \par}
 
     \vfill
-    {\large $date$ \par}
+    \noindent\hspace*{60mm}
+    \begin{minipage}{0.70\textwidth}
+        \colorbox{docbuildMetaBack}{%
+        \begin{minipage}{\dimexpr\linewidth-2\fboxsep}
+            \vspace{8pt}
+            {\small\textbf{PREPARED BY}}\par
+            $if(author)$$author$$else$Unknown$endif$\par
+            \vspace{10pt}
+            {\small\textbf{DATE}}\par
+            $if(date)$$date$$else$\today$endif$\par
+            \vspace{10pt}
+            {\small\textbf{VERSION}}\par
+            $if(version)$$version$$else$1.0$endif$
+            \vspace{8pt}
+        \end{minipage}%
+        }
+    \end{minipage}
+
+    \vspace*{22mm}
+    \restoregeometry
 \end{titlepage}
 
 % ------------------------------------------------------------
