@@ -3,12 +3,17 @@
 %   To use this as a custom cover, set `cover-template: docbuild-cover.tex`
 %   in the document definition.
 % ------------------------------------------------------------
+\definecolor{docbuildAccent}{RGB}{0,0,0}
+$if(cover-accent-colour-rgb)$
+\definecolor{docbuildAccent}{RGB}{$cover-accent-colour-rgb$}
+$endif$
+
 \begin{titlepage}
     \newgeometry{left=0mm,right=0mm,top=0mm,bottom=0mm}
     \thispagestyle{empty}
 
     \begin{tikzpicture}[remember picture,overlay]
-        \fill[docbuildBlue] (current page.north west) rectangle ([xshift=42mm]current page.south west);
+        \fill[docbuildAccent] (current page.north west) rectangle ([xshift=42mm]current page.south west);
     \end{tikzpicture}
 
     \vspace*{28mm}
@@ -18,6 +23,15 @@
     \vspace{14mm}
     \noindent\hspace*{60mm}
     {\fontsize{20}{24}\selectfont $if(subtitle)$$subtitle$$endif$ \par}
+
+    $if(cover-logo)$
+    \vspace{30mm}
+    \vfill
+    \hspace*{30mm}\makebox[\dimexpr\paperwidth-30mm\relax][c]{%
+        \includegraphics[width=0.34\dimexpr\paperwidth-30mm\relax]{\detokenize{$cover-logo$}}%
+    }
+    \vfill
+    $endif$
 
     \vfill
     \noindent\hspace*{60mm}

@@ -4,6 +4,7 @@
 # Where the `definition.yaml` file is for example:
 #    template: template.tex
 #    cover-template: cover-page.tex
+#    cover-accent-colour-rgb: R,G,B
 #    title: Title
 #    subtitle: Subtitle
 #    date: YYYY-MM-DD
@@ -174,6 +175,7 @@ def ensure_output_file_writable(path: Path) -> None:
             fh.flush()
     except OSError as exc:
         raise SystemExit(f"ERROR: cannot create or write output file '{path}': {exc}") from exc
+
 
 def load_doc_definition(doc_path: Path) -> dict:
     if yaml is None:
@@ -402,6 +404,24 @@ def doc_build_command(doc_path: Path, verbose: bool = False) -> tuple[list[str],
     for field in ("title", "subtitle", "date", "author", "subject", "keywords", "version"):
         if field in definition and definition[field] is not None:
             metadata[field] = str(definition[field])
+
+    cover_accent_colour_rgb = definition.get("cover-accent-colour-rgb")
+    if cover_accent_colour_rgb is not None and str(cover_accent_colour_rgb).strip() != "":
+        metadata["cover-accent-colour-rgb"] = str(cover_accent_colour_rgb)
+
+    cover_logo_value = definition.get("cover-logo")
+    if cover_logo_value is None:
+        cover_logo_value = definition.get("cover_logo")
+    if cover_logo_value is not None and str(cover_logo_value).strip() != "":
+        if assets_dir is None:
+            raise SystemExit("ERROR: cover-logo was specified but no assets-folder is configured.")
+
+        logo_path = (assets_dir / str(cover_logo_value)).resolve(strict=False)
+        if not logo_path.exists():
+            raise SystemExit(f"ERROR: cover logo file not found in assets folder: {logo_path}")
+
+        logo_value = logo_path.as_posix().replace('\\', '/')
+        metadata["cover-logo"] = logo_value
 
     command = ["pandoc"]
     command.extend(str(path) for path in input_paths)
